@@ -3,10 +3,10 @@
     {
       "context": "Global",
       "bindings": {
-        "ctrl+meta+up": "app:diffFileListUp",
-        "ctrl+meta+down": "app:diffFileListDown",
-        "ctrl+meta+left": "app:toggleDiffNoiseFilter",
-        "ctrl+meta+right": "app:toggleDiffPreSession"
+        "ctrl+alt+up": "app:diffFileListUp",
+        "ctrl+alt+down": "app:diffFileListDown",
+        "ctrl+alt+left": "app:toggleDiffNoiseFilter",
+        "ctrl+alt+right": "app:toggleDiffPreSession"
       }
     }
   ]

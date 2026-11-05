@@ -109,7 +109,10 @@ export const register: Register = on => {
     if (e.agentId !== undefined) return yield* next(e)
     const m = await read($, model)
     const ef = await read($, effort)
-    return yield* next({ ...e, ...(m && { model: m }), ...(ef && { effort: ef }) })
+    const r = yield* next({ ...e, ...(m && { model: m }), ...(ef && { effort: ef }) })
+    // The model the API reports for this answer, not the one we asked for.
+    if (r.usage) $.ui.status(`▸ ${r.usage.model}${ef ? ` · ${ef}` : ''}`)
+    return r
   })
 
   // Detailed breakdown: segmented bar + legend.
@@ -157,7 +160,6 @@ export const register: Register = on => {
     const set = async (nm: string | null, ne: Effort | null) => {
       await update($, model, () => nm)
       await update($, effort, () => ne)
-      $.ui.status(nm || ne ? `⚙ ${nm ?? 'default'} · ${ne ?? 'default'}` : undefined)
     }
     const stepModel = (d: number) =>
       set(MODELS[clamp(MODELS.indexOf(m) + d, MODELS.length)] ?? null, ef)

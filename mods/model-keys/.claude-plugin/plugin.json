@@ -1,6 +1,6 @@
 {
   "name": "model-keys",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context usage bar and breakdown pane",
   "author": {
     "name": "kygura"

@@ -8,7 +8,7 @@
       "name": "model-keys",
       "source": "./mods/model-keys",
       "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context usage bar and breakdown pane",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "name": "prompt-sharpen",
