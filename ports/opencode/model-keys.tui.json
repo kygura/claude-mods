@@ -1,0 +1,8 @@
+{
+  "keybinds": {
+    "model_cycle_favorite": "ctrl+alt+up",
+    "model_cycle_favorite_reverse": "ctrl+alt+down",
+    "variant_cycle": "ctrl+t,ctrl+alt+right",
+    "variant_list": "ctrl+alt+left"
+  }
+}
