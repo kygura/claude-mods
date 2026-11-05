@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
 import type { ContextSnapshot, Effort } from '../types'
-import { formatTokens, segments } from './context-bar'
+import { fitPrefix, formatTokens, segments } from './context-bar'
 
 const model = atom({ plugin: 'model-keys', key: 'model' } as const, null)
 const effort = atom({ plugin: 'model-keys', key: 'effort' } as const, null)
@@ -201,6 +201,29 @@ export const register: Register = on => {
     const BAR = 24
     const filled = ctx ? Math.min(BAR, Math.round((ctx.percent / 100) * BAR)) : 0
 
+    // Extras right of the bar, in priority order; whatever doesn't fit is dropped.
+    const GAP = 2
+    const pctText = ctx ? `${ctx.percent}%` : ''
+    const maxText = ctx ? `of ${formatTokens(ctx.max)}` : ''
+    const extras = (() => {
+      if (!ctx) return []
+      const used = ctx.slices.filter(sl => sl.kind === 'used' && sl.tokens > 0)
+      const sum = (kind: string) => ctx.slices.filter(sl => sl.kind === kind).reduce((n, sl) => n + sl.tokens, 0)
+      const items = [
+        { key: 'used', text: `${formatTokens(sum('used'))} used`, color: undefined as string | undefined },
+        { key: 'free', text: `${formatTokens(sum('free'))} free`, color: undefined },
+        ...[...used].sort((a, b) => b.tokens - a.tokens).slice(0, 4).map(sl => ({
+          key: sl.name, text: `■ ${sl.name} ${formatTokens(sl.tokens)}`, color: sl.color,
+        })),
+        ...(sum('buffer') > 0
+          ? [{ key: 'buffer', text: `■ autocompact ${formatTokens(sum('buffer'))}`, color: PASTEL.buffer }]
+          : []),
+      ]
+      // border + padding (4), label/bar/pct/max with their gaps, then the GAP before extras
+      const room = e.props.bodyColumns - 4 - (7 + 1 + BAR + 1 + pctText.length + 1 + maxText.length) - GAP
+      return fitPrefix(items, room, GAP)
+    })()
+
     return (
       <Box flexDirection="column" borderStyle="round" borderColor="#4b5563" paddingX={1} rowGap={1}>
         <Box columnGap={1}>
@@ -232,11 +255,25 @@ export const register: Register = on => {
               <Text color={fillColor(ctx.percent)}>{'█'.repeat(filled)}</Text>
               <Text color={PASTEL.free}>{'█'.repeat(BAR - filled)}</Text>
             </Button>
-            <Text color={fillColor(ctx.percent)}>{`${ctx.percent}%`}</Text>
-            <Text dimColor>{`of ${formatTokens(ctx.max)}`}</Text>
+            <Text color={fillColor(ctx.percent)}>{pctText}</Text>
+            <Text dimColor>{maxText}</Text>
+            {extras.length > 0 && (
+              <Box marginLeft={GAP - 1} columnGap={GAP}>
+                {extras.map(it =>
+                  it.color ? (
+                    <Box key={it.key} columnGap={1}>
+                      <Text color={it.color}>■</Text>
+                      <Text dimColor>{it.text.slice(2)}</Text>
+                    </Box>
+                  ) : (
+                    <Text key={it.key} dimColor>{it.text}</Text>
+                  ),
+                )}
+              </Box>
+            )}
           </Box>
         )}
-        <Text dimColor>ctrl+alt+↑↓ model · ctrl+alt+←→ effort · click bar for details</Text>
+        <Text dimColor>ctrl+alt+↑↓ model · ctrl+alt+←→ effort</Text>
       </Box>
     )
   })
