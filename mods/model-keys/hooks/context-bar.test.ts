@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { fitPrefix, formatTokens, segments } from './context-bar'
+import { formatTokens, segments } from './context-bar'
 
 test('segments fill the width exactly, proportionally', () => {
   const slices = [
@@ -18,12 +18,4 @@ test('segments fill the width exactly, proportionally', () => {
   expect(segments(slices, 200_000, 0)).toEqual([])
   expect(formatTokens(1500)).toBe('2k')
   expect(formatTokens(1_200_000)).toBe('1.2M')
-})
-
-test('fitPrefix keeps the leading items that fit, gaps included', () => {
-  const items = [{ text: 'abc' }, { text: 'de' }, { text: 'fghij' }, { text: 'k' }]
-  expect(fitPrefix(items, 7, 2).map(i => i.text)).toEqual(['abc', 'de'])
-  expect(fitPrefix(items, 15, 2).map(i => i.text)).toEqual(['abc', 'de', 'fghij'])
-  expect(fitPrefix(items, 2, 2)).toEqual([])
-  expect(fitPrefix(items, 100).length).toBe(4)
 })

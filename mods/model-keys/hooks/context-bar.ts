@@ -24,15 +24,3 @@ export function segments(slices: ContextSlice[], max: number, width: number): Se
 
 export const formatTokens = (n: number) =>
   n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `${Math.round(n / 1000)}k` : String(n)
-
-/** Longest prefix of `items` whose texts, `gap` cells apart, fit in `width` cells. */
-export function fitPrefix<T extends { text: string }>(items: T[], width: number, gap = 1): T[] {
-  const out: T[] = []
-  let used = 0
-  for (const item of items) {
-    used += (out.length ? gap : 0) + item.text.length
-    if (used > width) break
-    out.push(item)
-  }
-  return out
-}
