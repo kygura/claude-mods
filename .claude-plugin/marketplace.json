@@ -1,0 +1,14 @@
+{
+  "name": "claude-mods",
+  "owner": {
+    "name": "kygura"
+  },
+  "plugins": [
+    {
+      "name": "model-keys",
+      "source": "./mods/model-keys",
+      "description": "Switch model and effort with single-key hotkeys from a band above the prompt",
+      "version": "0.1.0"
+    }
+  ]
+}

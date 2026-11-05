@@ -1,0 +1,8 @@
+{
+  "name": "model-keys",
+  "version": "0.1.0",
+  "description": "Pick the model and effort level with ctrl+alt+arrows or a click, from a color-coded band above the prompt",
+  "author": { "name": "kygura" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
