@@ -10,6 +10,10 @@ const context = atom({ plugin: 'model-keys', key: 'context' } as const, null)
 
 const PANE = 'context'
 
+// Main-loop replies already stamped this turn, and alias -> API model id.
+let tagged = { turnId: '', model: '' }
+const resolved = new Map<string, string>()
+
 // null = session default
 const MODELS: (string | null)[] = [null, 'haiku', 'sonnet', 'opus', 'fable']
 const EFFORTS: Effort[] = ['low', 'medium', 'high', 'xhigh', 'max']
@@ -109,10 +113,26 @@ export const register: Register = on => {
     if (e.agentId !== undefined) return yield* next(e)
     const m = await read($, model)
     const ef = await read($, effort)
-    const r = yield* next({ ...e, ...(m && { model: m }), ...(ef && { effort: ef }) })
-    // The model the API reports for this answer, not the one we asked for.
-    if (r.usage) $.ui.status(`▸ ${r.usage.model}${ef ? ` · ${ef}` : ''}`)
-    return r
+    const req = { ...e, ...(m && { model: m }), ...(ef && { effort: ef }) }
+
+    // Stamp the reply itself with its model: the system prompt keeps naming the
+    // session model, so the model's own claim is not evidence.
+    // ponytail: shows the requested model (resolved to the API id once one reply
+    // has reported it); a server-side fallback would go unflagged.
+    const fresh = tagged.turnId !== e.turnId || tagged.model !== req.model
+    let tag = fresh ? `\`[${resolved.get(req.model) ?? req.model}]\`\n\n` : ''
+    const stream = next(req)
+    for await (const chunk of stream) {
+      if (tag && chunk.kind === 'text') {
+        tagged = { turnId: e.turnId, model: req.model }
+        yield { ...chunk, text: tag + chunk.text }
+        tag = ''
+        continue
+      }
+      if (chunk.kind === 'stop' && chunk.usage) resolved.set(req.model, chunk.usage.model)
+      yield chunk
+    }
+    return await stream.result
   })
 
   // Detailed breakdown: segmented bar + legend.
