@@ -1,0 +1,7 @@
+{
+  "name": "prompt-sharpen",
+  "version": "0.1.0",
+  "description": "Rewrites each prompt you send to be more explicit before Claude reads it",
+  "author": { "name": "kygura" },
+  "license": "MIT"
+}

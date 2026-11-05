@@ -50,7 +50,7 @@ if git diff --cached --quiet; then
   echo "nothing to commit"
 else
   if command -v gitleaks >/dev/null; then
-    gitleaks protect --staged --redact
+    gitleaks git --pre-commit --staged --redact --no-banner
   else
     echo "warning: gitleaks not installed, pushing without a secret scan" >&2
   fi

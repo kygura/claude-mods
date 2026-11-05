@@ -9,6 +9,12 @@
       "source": "./mods/model-keys",
       "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context usage bar and breakdown pane",
       "version": "0.2.0"
+    },
+    {
+      "name": "prompt-sharpen",
+      "source": "./mods/prompt-sharpen",
+      "description": "Rewrites each prompt you send to be more explicit before Claude reads it",
+      "version": "0.1.0"
     }
   ]
 }
