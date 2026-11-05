@@ -7,8 +7,8 @@
     {
       "name": "model-keys",
       "source": "./mods/model-keys",
-      "description": "Switch model and effort with single-key hotkeys from a band above the prompt",
-      "version": "0.1.0"
+      "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context usage bar and breakdown pane",
+      "version": "0.2.0"
     }
   ]
 }

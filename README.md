@@ -4,7 +4,7 @@ Mods for [Claude Code](https://code.claude.com/docs/en/plugins/mods/overview), p
 
 | Mod | What it does |
 | --- | --- |
-| [model-keys](mods/model-keys) | Pick the model and effort level with `ctrl+alt+arrows` or a click, from a color-coded band above the prompt |
+| [model-keys](mods/model-keys) | Pick model and effort with `ctrl+alt+arrows` or a click, plus a context usage bar and breakdown pane |
 
 ## Install
 
