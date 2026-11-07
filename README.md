@@ -6,8 +6,9 @@ Mods for [Claude Code](https://code.claude.com/docs/en/plugins/mods/overview), p
 | --- | --- |
 | [model-keys](mods/model-keys) | Pick model and effort with `ctrl+alt+arrows` or a click, plus a context usage bar and breakdown pane |
 | [prompt-sharpen](mods/prompt-sharpen) | Rewrites each prompt you send to be more explicit before Claude reads it |
+| [subagent-model](mods/subagent-model) | Shows the model and effort level of the session and each running subagent, nested, below the prompt bar |
 
-Both mods are also ported to [pi](https://pi.dev) and [opencode](https://opencode.ai); see [pi and opencode](#pi-and-opencode).
+model-keys and prompt-sharpen are also ported to [pi](https://pi.dev) and [opencode](https://opencode.ai); see [pi and opencode](#pi-and-opencode).
 
 ## Install
 

@@ -1,0 +1,8 @@
+{
+  "name": "subagent-model",
+  "version": "0.1.0",
+  "description": "Shows the model and effort level of the session and each running subagent, nested, below the prompt bar",
+  "author": { "name": "kygura" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

@@ -15,6 +15,12 @@
       "source": "./mods/prompt-sharpen",
       "description": "Rewrites each prompt you send to be more explicit before Claude reads it",
       "version": "0.1.0"
+    },
+    {
+      "name": "subagent-model",
+      "source": "./mods/subagent-model",
+      "description": "Shows the model and effort level of the session and each running subagent, nested, below the prompt bar",
+      "version": "0.1.0"
     }
   ]
 }
