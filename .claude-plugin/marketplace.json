@@ -11,9 +11,21 @@
       "version": "0.3.0"
     },
     {
+      "name": "no-self-clone",
+      "source": "./mods/no-self-clone",
+      "description": "Stops the planner from spawning copies of itself: subagents, forks and workflow agents must run on a cheaper model",
+      "version": "0.1.0"
+    },
+    {
       "name": "prompt-sharpen",
       "source": "./mods/prompt-sharpen",
       "description": "Rewrites each prompt you send to be more explicit before Claude reads it",
+      "version": "0.1.0"
+    },
+    {
+      "name": "strict-prose",
+      "source": "./mods/strict-prose",
+      "description": "Enforces plain house writing rules on every file, commit, post and copy reply: no em dashes, hype words, emoji or stock AI phrasing",
       "version": "0.1.0"
     },
     {

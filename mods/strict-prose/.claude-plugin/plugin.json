@@ -1,0 +1,27 @@
+{
+  "name": "strict-prose",
+  "version": "0.1.0",
+  "description": "Enforces plain house writing rules on every file, commit, post and copy reply: no em dashes, hype words, emoji or stock AI phrasing",
+  "author": { "name": "kygura" },
+  "license": "MIT",
+  "userConfig": {
+    "ignore_paths": {
+      "type": "string",
+      "title": "Ignored paths",
+      "description": "Comma-separated path fragments the file check skips (this mod's own rule list is skipped by default)",
+      "default": "strict-prose/"
+    },
+    "chat_dashes": {
+      "type": "boolean",
+      "title": "Rewrite dashes in chat",
+      "description": "Replace em and en dashes in Claude's chat replies with commas as they stream",
+      "default": true
+    },
+    "auto_rewrite": {
+      "type": "boolean",
+      "title": "Auto-rewrite copy replies",
+      "description": "When a reply to a copy request breaks the rules, send it back once for a rewrite",
+      "default": true
+    }
+  }
+}
