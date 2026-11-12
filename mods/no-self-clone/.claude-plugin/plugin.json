@@ -1,0 +1,23 @@
+{
+  "name": "no-self-clone",
+  "version": "0.1.0",
+  "description": "Stops the planner from spawning copies of itself: subagents, forks and workflow agents must run on a cheaper model",
+  "author": { "name": "kygura" },
+  "license": "MIT",
+  "userConfig": {
+    "mode": {
+      "type": "string",
+      "title": "Enforcement",
+      "description": "rewrite: move an offending spawn to the worker model. deny: refuse it so the planner retries with an explicit model",
+      "default": "rewrite",
+      "options": ["rewrite", "deny"]
+    },
+    "worker_model": {
+      "type": "string",
+      "title": "Worker model",
+      "description": "Model an offending spawn is moved to, when it sits below the planner (else one tier below the planner)",
+      "default": "sonnet",
+      "options": ["sonnet", "haiku", "opus"]
+    }
+  }
+}

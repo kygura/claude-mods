@@ -5,7 +5,9 @@ Mods for [Claude Code](https://code.claude.com/docs/en/plugins/mods/overview), p
 | Mod | What it does |
 | --- | --- |
 | [model-keys](mods/model-keys) | Pick model and effort with `ctrl+alt+arrows` or a click, plus a context usage bar and breakdown pane |
+| [no-self-clone](mods/no-self-clone) | Stops the planner from spawning copies of itself: subagents, forks and workflow agents must run on a cheaper model |
 | [prompt-sharpen](mods/prompt-sharpen) | Rewrites each prompt you send to be more explicit before Claude reads it |
+| [strict-prose](mods/strict-prose) | Enforces plain house writing rules on every file, commit, post and copy reply: no em dashes, hype words, emoji or stock AI phrasing |
 | [subagent-model](mods/subagent-model) | Shows the model and effort level of the session and each running subagent, nested, below the prompt bar |
 
 model-keys and prompt-sharpen are also ported to [pi](https://pi.dev) and [opencode](https://opencode.ai); see [pi and opencode](#pi-and-opencode).
