@@ -42,6 +42,23 @@ git clone https://github.com/kygura/claude-mods && cd claude-mods
 
 Then run `/reload-plugins` in open sessions.
 
+### Windows and WSL
+
+Claude Desktop on Windows reads `%USERPROFILE%\.claude`. Running `./install.sh` inside WSL installs into the Linux home instead, so Desktop never sees the mods. Install on the Windows side:
+
+```sh
+./install.sh --windows               # from a WSL clone: hands off to install.ps1 via powershell.exe
+./install.sh --windows model-keys    # just one
+```
+
+Or from PowerShell in a Windows clone:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1
+```
+
+With a Windows `claude` CLI on `PATH`, the script runs `claude plugin install`. Without one, it adds the marketplace and the mods to `extraKnownMarketplaces` and `enabledPlugins` in `%USERPROFILE%\.claude\settings.json`, and Claude installs them on next start. Either way it merges keybindings into `%USERPROFILE%\.claude\keybindings.json` without overwriting your keys. Restart Claude Desktop afterwards.
+
 ### Windows (desktop app)
 
 The Windows desktop app reads `%USERPROFILE%\.claude`, so mods installed from inside WSL do not show up in it. Install from PowerShell on the Windows side instead (needs the Windows `claude` CLI: `irm https://claude.ai/install.ps1 | iex`):
