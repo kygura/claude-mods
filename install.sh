@@ -4,6 +4,7 @@
 # Usage: ./install.sh [mod ...]   (no args: every mod in mods/)
 #        ./install.sh --pi [mod ...]        pi ports in ports/pi/
 #        ./install.sh --opencode [mod ...]  opencode ports in ports/opencode/
+#        ./install.sh --windows [mod ...]   from WSL: install for Claude Desktop on Windows
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 SOURCE="${CLAUDE_MODS_SOURCE:-kygura/claude-mods}"   # or a local path for testing
@@ -87,6 +88,12 @@ EOF
 case "${1:-}" in
   --pi) shift; install_pi "$@"; exit ;;
   --opencode) shift; install_opencode "$@"; exit ;;
+  --windows)
+    # From WSL: install into the Windows home that Claude Desktop reads.
+    shift
+    command -v powershell.exe >/dev/null || { echo "powershell.exe not found; --windows runs from WSL only" >&2; exit 1; }
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(wslpath -w "$ROOT/install.ps1")" "$@"
+    exit ;;
 esac
 
 if claude plugin marketplace list 2>/dev/null | grep -q "$MARKET"; then
