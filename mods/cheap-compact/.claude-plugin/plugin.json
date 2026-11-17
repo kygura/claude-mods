@@ -1,0 +1,7 @@
+{
+  "name": "cheap-compact",
+  "version": "0.1.0",
+  "description": "Runs conversation compaction on Haiku instead of the session's main model",
+  "author": { "name": "kygura" },
+  "license": "MIT"
+}

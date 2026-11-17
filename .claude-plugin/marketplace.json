@@ -5,6 +5,12 @@
   },
   "plugins": [
     {
+      "name": "cheap-compact",
+      "source": "./mods/cheap-compact",
+      "description": "Runs conversation compaction on Haiku instead of the session's main model",
+      "version": "0.1.0"
+    },
+    {
       "name": "model-keys",
       "source": "./mods/model-keys",
       "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context usage bar and breakdown pane",
