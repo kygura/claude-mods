@@ -4,6 +4,7 @@ Mods for [Claude Code](https://code.claude.com/docs/en/plugins/mods/overview), p
 
 | Mod | What it does |
 | --- | --- |
+| [cheap-compact](mods/cheap-compact) | Runs conversation compaction on Haiku instead of the session's main model |
 | [model-keys](mods/model-keys) | Pick model and effort with `ctrl+alt+arrows` or a click, plus a context usage bar and breakdown pane |
 | [no-self-clone](mods/no-self-clone) | Stops the planner from spawning copies of itself: subagents, forks and workflow agents must run on a cheaper model |
 | [prompt-sharpen](mods/prompt-sharpen) | Rewrites each prompt you send to be more explicit before Claude reads it |
