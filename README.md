@@ -42,6 +42,16 @@ git clone https://github.com/kygura/claude-mods && cd claude-mods
 
 Then run `/reload-plugins` in open sessions.
 
+### Windows (desktop app)
+
+The Windows desktop app reads `%USERPROFILE%\.claude`, so mods installed from inside WSL do not show up in it. Install from PowerShell on the Windows side instead (needs the Windows `claude` CLI: `irm https://claude.ai/install.ps1 | iex`):
+
+```powershell
+irm https://raw.githubusercontent.com/kygura/claude-mods/main/install.ps1 | iex
+```
+
+Or from a clone: `.\install.ps1` for every mod, `.\install.ps1 model-keys` for one. It merges keybindings the same way `install.sh` does. Restart the desktop app afterwards.
+
 ### pi and opencode
 
 ```sh
