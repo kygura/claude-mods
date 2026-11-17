@@ -12,3 +12,12 @@ The choice applies to every main-loop request (subagents keep theirs); `/model` 
 ## Setup
 
 The keys need the bindings in [`keybindings.json`](keybindings.json) merged into `~/.claude/keybindings.json`. The repository's `install.sh` does this. They borrow diff-panel actions, so they do nothing while the diff panel is open.
+
+## Cloud sessions
+
+A cloud session shown in the Claude app (web, desktop or mobile) currently attaches no drawing surface: `$.session.surfaces()` is empty and the engine sends no `ui.render` request, so the band and the context pane cannot show. Hooks still run. While no surface is attached, model-keys puts what the band would show into two places:
+
+- The reply stamp: `[claude-opus-5-5 · effort high · ctx 42% of 200k]` instead of `[claude-opus-5-5]`.
+- The status line, through `$.ui.status`. Whether the app shows it has not been confirmed.
+
+The stamp goes back to the model name alone, and the status line clears, once a surface attaches.

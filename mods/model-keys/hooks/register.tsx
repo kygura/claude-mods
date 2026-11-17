@@ -18,6 +18,14 @@ const STAMP = /^`\[[^\]\n]+\]`\n\n/
 /** Prefix text with the model stamp, unless another copy of this hook already did. */
 export const stampText = (text: string, model: string) => (STAMP.test(text) ? text : `\`[${model}]\`\n\n${text}`)
 
+/**
+ * The band's facts as one line, for a session no app has attached to as a
+ * drawing surface (a cloud session shown in the Claude app does not attach, so
+ * no ui.render reaches the mod). Goes into the reply stamp and the status line.
+ */
+export const headlessLine = (model: string, effort: string | number | undefined, ctx: { percent: number; max: number } | null) =>
+  [model, effort !== undefined && `effort ${effort}`, ctx && `ctx ${ctx.percent}% of ${formatTokens(ctx.max)}`].filter(Boolean).join(' · ')
+
 // alias -> API model id
 const resolved = new Map<string, string>()
 
@@ -93,6 +101,18 @@ async function refreshContext($: EngineInterface) {
       })),
   }
   await update($, context, () => snapshot)
+  await syncStatus($)
+}
+
+// True when no surface is attached: nothing the mod draws can show.
+const isHeadless = async ($: EngineInterface) => (await $.session.surfaces()).length === 0
+
+// Mirror the band into the status line while headless; clear it once a surface attaches.
+async function syncStatus($: EngineInterface) {
+  if (!(await isHeadless($))) return $.ui.status(undefined)
+  const m = await read($, model)
+  const ef = await read($, effort)
+  $.ui.status(headlessLine(m ?? 'default model', ef ?? undefined, await read($, context)))
 }
 
 export const register: Register = on => {
@@ -108,6 +128,18 @@ export const register: Register = on => {
     await refreshContext($)
     await $.ui.open({ id: PANE, title: 'Context' })
     return { text: 'Context pane opened.' }
+  })
+
+  on('session.attach', async ($, e, next) => {
+    const result = await next(e)
+    await syncStatus($)
+    return result
+  })
+
+  on('session.detach', async ($, e, next) => {
+    const result = await next(e)
+    await syncStatus($)
+    return result
   })
 
   on('session.measure', async ($, e, next) => {
@@ -128,13 +160,17 @@ export const register: Register = on => {
     // has reported it); a server-side fallback would go unflagged.
     const key = `${e.turnId}:${req.model}`
     let tag = (await read($, tagged)) !== key
+    // Headless, the stamp also carries what the band would show.
+    const headless = tag && (await isHeadless($))
+    const ctx = headless ? await read($, context) : null
     const stream = next(req)
     for await (const chunk of stream) {
       // Blank chunks (a step that goes straight to a tool call) would leave a bare stamp.
       if (tag && chunk.kind === 'text' && chunk.text.trim() !== '') {
         tag = false
         await update($, tagged, () => key)
-        yield { ...chunk, text: stampText(chunk.text, resolved.get(req.model) ?? req.model) }
+        const name = resolved.get(req.model) ?? req.model
+        yield { ...chunk, text: stampText(chunk.text, headless ? headlessLine(name, req.effort, ctx) : name) }
         continue
       }
       if (chunk.kind === 'stop' && chunk.usage) resolved.set(req.model, chunk.usage.model)
