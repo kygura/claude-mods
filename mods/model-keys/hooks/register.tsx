@@ -86,9 +86,15 @@ async function refreshContext($: EngineInterface) {
   const { context: usage } = await $.session.usage({ breakdown: 'summary' })
   const b = usage.breakdown
   if (!b) return
+  // Headline = the status line's real figure (last response vs the model's
+  // window). The breakdown is a local estimate against the smaller compaction
+  // window, so it is used only until the first response, and for the segments.
+  const isLive = usage.tokens != null && usage.percent != null
   const snapshot: ContextSnapshot = {
-    max: b.rawMaxTokens,
-    percent: b.percentage,
+    max: isLive ? usage.window : b.rawMaxTokens,
+    percent: isLive ? usage.percent! : b.percentage,
+    tokens: isLive ? usage.tokens! : b.totalTokens,
+    sliceMax: b.rawMaxTokens,
     slices: b.categories
       .filter(c => c.kind !== 'deferred')
       .map((c, i) => ({
@@ -162,22 +168,31 @@ export const register: Register = on => {
 
   // Detailed breakdown: segmented bar + legend.
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text } = $.ui.resolve(e)
+    const { Box, Button, Text } = $.ui.resolve(e)
     const ctx = await read($, context)
     if (!ctx) return <Text dimColor>No context reading yet.</Text>
 
     const width = Math.max(10, e.props.bodyColumns)
-    const total = ctx.slices.filter(sl => sl.kind === 'used').reduce((n, sl) => n + sl.tokens, 0)
-    const pct = (tokens: number) => `${((tokens / ctx.max) * 100).toFixed(1)}%`
+    // ?? 0: a snapshot stored before `tokens` existed, until session.start refreshes it.
+    const total = ctx.tokens ?? 0
+    // Slices are measured against the compaction window, not the headline's.
+    const sliceMax = ctx.sliceMax ?? ctx.max
+    const pct = (tokens: number) => `${((tokens / sliceMax) * 100).toFixed(1)}%`
+    const turns = await $.session.turns()
 
     return (
       <Box flexDirection="column" rowGap={1}>
         <Box columnGap={1}>
           <Text bold color={fillColor(ctx.percent)}>{`${ctx.percent}%`}</Text>
-          <Text dimColor>{`${formatTokens(total)} / ${formatTokens(ctx.max)}`}</Text>
+          <Text dimColor>{`${formatTokens(total)} / ${formatTokens(ctx.max)} · ${turns} ${turns === 1 ? 'turn' : 'turns'}`}</Text>
+          {/* Queued like typed commands, so they wait out a running turn. */}
+          <Box marginLeft={1} columnGap={1}>
+            <Button key="compact" plain onPress={() => $.command.run({ command: 'compact' })}><Text color={PASTEL.butter}>c</Text></Button>
+            <Button key="clear" plain onPress={() => $.command.run({ command: 'clear' })}><Text color={PASTEL.rose}>x</Text></Button>
+          </Box>
         </Box>
         <Box>
-          {segments(ctx.slices, ctx.max, width).map(seg => (
+          {segments(ctx.slices, sliceMax, width).map(seg => (
             <Text key={seg.name} color={seg.color}>{'█'.repeat(seg.cells)}</Text>
           ))}
         </Box>
@@ -200,7 +215,6 @@ export const register: Register = on => {
     const { Box, Button, Text } = $.ui.resolve(e)
     const m = await read($, model)
     const ef = await read($, effort)
-    const ctx = await read($, context)
 
     const set = async (nm: string | null, ne: Effort | null) => {
       await update($, model, () => nm)
@@ -212,29 +226,29 @@ export const register: Register = on => {
     const stepEffort = (d: number) =>
       set(m, EFFORTS[clamp(EFFORTS.indexOf(ef ?? 'medium') + d, EFFORTS.length)] ?? 'medium')
 
-    // Selected option is an inverted, bold chip; the rest are tinted text.
-    const chip = (key: string, label: string, color: string, isOn: boolean, onPress: () => unknown) => (
-      <Button key={key} plain onPress={onPress}>
-        <Text color={color} bold={isOn} inverse={isOn}>{` ${label} `}</Text>
-      </Button>
-    )
+    const isTerminal = e.surface === 'terminal'
+    // Terminal: selected option is an inverted, bold chip; the rest tinted text.
+    // Desktop draws a native button that drops Text color/inverse, so the color
+    // goes on a dot beside it (filled = selected) and the rest are dimmed.
+    const chip = (key: string, label: string, color: string, isOn: boolean, onPress: () => unknown) =>
+      isTerminal ? (
+        <Button key={key} plain onPress={onPress}>
+          <Text color={color} bold={isOn} inverse={isOn}>{` ${label} `}</Text>
+        </Button>
+      ) : (
+        <Box key={key} alignItems="center" flexShrink={0}>
+          <Text color={color} bold>{isOn ? '●' : '○'}</Text>
+          <Button key={key} plain dimColor={!isOn} onPress={onPress}>{label}</Button>
+        </Box>
+      )
     const arrow = (key: string, action: string, glyph: string, onPress: () => unknown) => (
       <Button key={key} plain dimColor action={action} onPress={onPress}>{glyph}</Button>
     )
 
-    // Simple one-line bar: fill vs free, click for the breakdown pane.
-    const BAR = 24
-    const filled = ctx ? Math.min(BAR, Math.round((ctx.percent / 100) * BAR)) : 0
-
-    const pctText = ctx ? `${ctx.percent}%` : ''
-    const maxText = ctx ? `of ${formatTokens(ctx.max)}` : ''
-    const used = ctx ? ctx.slices.filter(sl => sl.kind === 'used').reduce((n, sl) => n + sl.tokens, 0) : 0
-    const turns = await $.session.turns()
-
     return (
       <Box flexDirection="column" borderStyle="round" borderColor="#4b5563" paddingX={1} rowGap={1}>
-        <Box columnGap={1}>
-          <Box width={7}><Text dimColor>model</Text></Box>
+        <Box columnGap={1} flexWrap="wrap" alignItems="center">
+          <Box width={7} flexShrink={0}><Text dimColor>model</Text></Box>
           {MODELS.map(alias => {
             const name = alias ?? 'default'
             return chip(name, name, MODEL_COLOR[name] ?? '#9ca3af', m === alias, () => set(alias, ef))
@@ -244,8 +258,8 @@ export const register: Register = on => {
             {arrow('md', KEYS.modelDown, '▼', () => stepModel(-1))}
           </Box>
         </Box>
-        <Box columnGap={1}>
-          <Box width={7}><Text dimColor>effort</Text></Box>
+        <Box columnGap={1} flexWrap="wrap" alignItems="center">
+          <Box width={7} flexShrink={0}><Text dimColor>effort</Text></Box>
           {EFFORTS.map(level => chip(level, level, EFFORT_COLOR[level], ef === level, () => set(m, level)))}
           <Box marginLeft={1} columnGap={1}>
             {arrow('ed', KEYS.effortDown, '◀', () => stepEffort(-1))}
@@ -255,26 +269,8 @@ export const register: Register = on => {
             <Button key="reset" plain dimColor onPress={() => set(null, null)}>reset</Button>
           </Box>
         </Box>
-        {ctx && (
-          <Box columnGap={1}>
-            <Box width={7}><Text dimColor>context</Text></Box>
-            <Button key="ctx" plain onPress={() => $.ui.open({ id: PANE, title: 'Context', focus: true })}>
-              <Text color={fillColor(ctx.percent)}>{'█'.repeat(filled)}</Text>
-              <Text color={PASTEL.free}>{'█'.repeat(BAR - filled)}</Text>
-            </Button>
-            <Text color={fillColor(ctx.percent)}>{pctText}</Text>
-            <Text dimColor>{maxText}</Text>
-            {/* Queued like typed commands, so they wait out a running turn. */}
-            <Box marginLeft={1} columnGap={1}>
-              <Button key="compact" plain onPress={() => $.command.run({ command: 'compact' })}><Text color={PASTEL.butter}>c</Text></Button>
-              <Button key="clear" plain onPress={() => $.command.run({ command: 'clear' })}><Text color={PASTEL.rose}>x</Text></Button>
-            </Box>
-            <Box marginLeft={1}>
-              <Text dimColor>{`${formatTokens(used)} tokens · ${turns} ${turns === 1 ? 'turn' : 'turns'}`}</Text>
-            </Box>
-          </Box>
-        )}
-        <Text dimColor>ctrl+alt+↑↓ model · ctrl+alt+←→ effort</Text>
+        {/* The chords fire only on the terminal (Button `action`). */}
+        {isTerminal && <Text dimColor>ctrl+alt+↑↓ model · ctrl+alt+←→ effort</Text>}
       </Box>
     )
   })
