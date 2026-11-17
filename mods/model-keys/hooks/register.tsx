@@ -21,7 +21,8 @@ export const stampText = (text: string, model: string) => (STAMP.test(text) ? te
 /**
  * The band's facts as one line, for a session no app has attached to as a
  * drawing surface (a cloud session shown in the Claude app does not attach, so
- * no ui.render reaches the mod). Goes into the reply stamp and the status line.
+ * no ui.render reaches the mod). Goes into the reply stamp, the one channel
+ * that reaches the app there.
  */
 export const headlessLine = (model: string, effort: string | number | undefined, ctx: { percent: number; max: number } | null) =>
   [model, effort !== undefined && `effort ${effort}`, ctx && `ctx ${ctx.percent}% of ${formatTokens(ctx.max)}`].filter(Boolean).join(' · ')
@@ -101,19 +102,11 @@ async function refreshContext($: EngineInterface) {
       })),
   }
   await update($, context, () => snapshot)
-  await syncStatus($)
 }
 
-// True when no surface is attached: nothing the mod draws can show.
+// True when no surface is attached: nothing the mod draws can show, and
+// status, toast and log lines do not reach the app either.
 const isHeadless = async ($: EngineInterface) => (await $.session.surfaces()).length === 0
-
-// Mirror the band into the status line while headless; clear it once a surface attaches.
-async function syncStatus($: EngineInterface) {
-  if (!(await isHeadless($))) return $.ui.status(undefined)
-  const m = await read($, model)
-  const ef = await read($, effort)
-  $.ui.status(headlessLine(m ?? 'default model', ef ?? undefined, await read($, context)))
-}
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
@@ -128,18 +121,6 @@ export const register: Register = on => {
     await refreshContext($)
     await $.ui.open({ id: PANE, title: 'Context' })
     return { text: 'Context pane opened.' }
-  })
-
-  on('session.attach', async ($, e, next) => {
-    const result = await next(e)
-    await syncStatus($)
-    return result
-  })
-
-  on('session.detach', async ($, e, next) => {
-    const result = await next(e)
-    await syncStatus($)
-    return result
   })
 
   on('session.measure', async ($, e, next) => {

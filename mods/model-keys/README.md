@@ -15,9 +15,6 @@ The keys need the bindings in [`keybindings.json`](keybindings.json) merged into
 
 ## Cloud sessions
 
-A cloud session shown in the Claude app (web, desktop or mobile) currently attaches no drawing surface: `$.session.surfaces()` is empty and the engine sends no `ui.render` request, so the band and the context pane cannot show. Hooks still run. While no surface is attached, model-keys puts what the band would show into two places:
+A cloud session shown in the Claude app (web, desktop or mobile) currently attaches no drawing surface: `$.session.surfaces()` is empty and the engine sends no `ui.render` request, so the band and the context pane cannot show. Status, toast and log lines (`$.ui.status`, `$.ui.toast`, `$.ui.log`) do not reach the app either. Hooks still run, and text the mod writes into a reply does show.
 
-- The reply stamp: `[claude-opus-5-5 · effort high · ctx 42% of 200k]` instead of `[claude-opus-5-5]`.
-- The status line, through `$.ui.status`. Whether the app shows it has not been confirmed.
-
-The stamp goes back to the model name alone, and the status line clears, once a surface attaches.
+So while no surface is attached, the reply stamp carries what the band would show: `[claude-opus-5-5 · effort high · ctx 42% of 200k]` instead of `[claude-opus-5-5]`. Once a surface attaches, the stamp goes back to the model name alone.
