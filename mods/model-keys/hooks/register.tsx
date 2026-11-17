@@ -7,11 +7,18 @@ import { formatTokens, segments } from './context-bar'
 const model = atom({ plugin: 'model-keys', key: 'model' } as const, null)
 const effort = atom({ plugin: 'model-keys', key: 'effort' } as const, null)
 const context = atom({ plugin: 'model-keys', key: 'context' } as const, null)
+// Main-loop replies already stamped, as turnId + model. Plugin state rather than a
+// module variable: when the mod is enabled at both user and project scope, each
+// copy loads its own module, and a module variable lets every copy stamp.
+const tagged = atom({ plugin: 'model-keys', key: 'tagged' } as const, null)
 
 const PANE = 'context'
+const STAMP = /^`\[[^\]\n]+\]`\n\n/
 
-// Main-loop replies already stamped this turn, and alias -> API model id.
-let tagged = { turnId: '', model: '' }
+/** Prefix text with the model stamp, unless another copy of this hook already did. */
+export const stampText = (text: string, model: string) => (STAMP.test(text) ? text : `\`[${model}]\`\n\n${text}`)
+
+// alias -> API model id
 const resolved = new Map<string, string>()
 
 // null = session default
@@ -119,14 +126,15 @@ export const register: Register = on => {
     // session model, so the model's own claim is not evidence.
     // ponytail: shows the requested model (resolved to the API id once one reply
     // has reported it); a server-side fallback would go unflagged.
-    const fresh = tagged.turnId !== e.turnId || tagged.model !== req.model
-    let tag = fresh ? `\`[${resolved.get(req.model) ?? req.model}]\`\n\n` : ''
+    const key = `${e.turnId}:${req.model}`
+    let tag = (await read($, tagged)) !== key
     const stream = next(req)
     for await (const chunk of stream) {
-      if (tag && chunk.kind === 'text') {
-        tagged = { turnId: e.turnId, model: req.model }
-        yield { ...chunk, text: tag + chunk.text }
-        tag = ''
+      // Blank chunks (a step that goes straight to a tool call) would leave a bare stamp.
+      if (tag && chunk.kind === 'text' && chunk.text.trim() !== '') {
+        tag = false
+        await update($, tagged, () => key)
+        yield { ...chunk, text: stampText(chunk.text, resolved.get(req.model) ?? req.model) }
         continue
       }
       if (chunk.kind === 'stop' && chunk.usage) resolved.set(req.model, chunk.usage.model)
