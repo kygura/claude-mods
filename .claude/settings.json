@@ -1,0 +1,18 @@
+{
+  "extraKnownMarketplaces": {
+    "claude-mods": {
+      "source": {
+        "source": "github",
+        "repo": "kygura/claude-mods"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "cheap-compact@claude-mods": true,
+    "model-keys@claude-mods": true,
+    "no-self-clone@claude-mods": true,
+    "prompt-sharpen@claude-mods": true,
+    "strict-prose@claude-mods": true,
+    "subagent-model@claude-mods": true
+  }
+}
