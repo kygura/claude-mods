@@ -6,6 +6,6 @@ export type ContextSnapshot = { slices: ContextSlice[]; max: number; percent: nu
 
 declare module 'claude-code' {
   interface PluginState {
-    'model-keys': { model: string | null; effort: Effort | null; context: ContextSnapshot | null }
+    'model-keys': { model: string | null; effort: Effort | null; context: ContextSnapshot | null; tagged: string | null }
   }
 }
