@@ -39,6 +39,12 @@
       "source": "./mods/subagent-model",
       "description": "Shows the model and effort level of the session and each running subagent, nested, below the prompt bar",
       "version": "0.1.0"
+    },
+    {
+      "name": "surface",
+      "source": "./mods/surface",
+      "description": "Holds edits and commits until Claude can state their consequences, and makes it ask you when it can't",
+      "version": "0.1.0"
     }
   ]
 }

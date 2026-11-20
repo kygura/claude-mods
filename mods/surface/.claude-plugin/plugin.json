@@ -1,0 +1,33 @@
+{
+  "name": "surface",
+  "version": "0.1.0",
+  "description": "Holds edits and commits until Claude can state their consequences, and makes it ask you when it can't",
+  "author": { "name": "kygura" },
+  "license": "MIT",
+  "userConfig": {
+    "ignore_paths": {
+      "type": "string",
+      "title": "Ignored paths",
+      "description": "Comma-separated path fragments the gate never holds (scratch, notes, plans)",
+      "default": "/tmp/,.claude/plans/,.claude/memory/"
+    },
+    "allow_new_files": {
+      "type": "boolean",
+      "title": "Free new files",
+      "description": "Let Claude create a file that does not exist yet without declaring it",
+      "default": true
+    },
+    "gate_shell_edits": {
+      "type": "boolean",
+      "title": "Gate shell edits",
+      "description": "Also hold sed -i, perl -i and > redirects into existing files",
+      "default": true
+    },
+    "reset_on_prompt": {
+      "type": "boolean",
+      "title": "Reset on each message",
+      "description": "Clearances end when you send a new message, so each instruction gets its own declaration",
+      "default": true
+    }
+  }
+}
