@@ -1,6 +1,6 @@
 # usage-bars
 
-Shows your Claude plan usage as bars in a bordered band above the prompt:
+Shows your Claude plan usage as color-coded bars (eighth-cell precision; green, lime, yellow, orange, red as usage climbs) in a bordered band above the prompt. On a narrow terminal it shows just the numbers on one line:
 
 - **5h**: the rolling 5-hour session limit
 - **week**: the weekly limit across all models
