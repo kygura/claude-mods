@@ -5,12 +5,13 @@ Mods for [Claude Code](https://code.claude.com/docs/en/plugins/mods/overview), p
 | Mod | What it does |
 | --- | --- |
 | [cheap-compact](mods/cheap-compact) | Runs conversation compaction on Haiku instead of the session's main model |
-| [model-keys](mods/model-keys) | Pick model and effort with `ctrl+alt+arrows` or a click, plus a context usage bar and breakdown pane |
+| [model-keys](mods/model-keys) | Pick model and effort with `ctrl+alt+arrows` or a click, plus a context breakdown pane with compact and clear buttons |
 | [no-self-clone](mods/no-self-clone) | Stops the planner from spawning copies of itself: subagents, forks and workflow agents must run on a cheaper model |
 | [prompt-sharpen](mods/prompt-sharpen) | Rewrites each prompt you send to be more explicit before Claude reads it |
 | [strict-prose](mods/strict-prose) | Enforces plain house writing rules on every file, commit, post and copy reply: no em dashes, hype words, emoji or stock AI phrasing |
 | [surface](mods/surface) | Holds edits and commits until Claude can state their consequences, and makes it ask you when it can't. Also ships as a plain settings hook and a skill |
 | [subagent-model](mods/subagent-model) | Shows the model and effort level of the session and each running subagent, nested, below the prompt bar |
+| [usage-bars](mods/usage-bars) | Plan usage bars above the prompt: 5-hour session, weekly, per-model weekly, reset countdowns and extra usage |
 
 model-keys and prompt-sharpen are also ported to [pi](https://pi.dev) and [opencode](https://opencode.ai); see [pi and opencode](#pi-and-opencode).
 

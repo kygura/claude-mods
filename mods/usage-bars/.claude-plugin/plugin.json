@@ -1,0 +1,8 @@
+{
+  "name": "usage-bars",
+  "version": "0.1.0",
+  "description": "Plan usage bars above the prompt: 5-hour session, weekly, per-model weekly (Fable), reset countdowns and extra usage",
+  "author": { "name": "kygura" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
