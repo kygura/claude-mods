@@ -41,6 +41,12 @@
       "version": "0.1.0"
     },
     {
+      "name": "surface",
+      "source": "./mods/surface",
+      "description": "Holds edits and commits until Claude can state their consequences, and makes it ask you when it can't",
+      "version": "0.1.0"
+    },
+    {
       "name": "usage-bars",
       "source": "./mods/usage-bars",
       "description": "Plan usage bars above the prompt: 5-hour session, weekly, per-model weekly (Fable), reset countdowns and extra usage",
