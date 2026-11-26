@@ -14,7 +14,7 @@
       "name": "model-keys",
       "source": "./mods/model-keys",
       "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context breakdown pane with compact and clear buttons",
-      "version": "0.4.0"
+      "version": "0.4.1"
     },
     {
       "name": "no-self-clone",
@@ -43,7 +43,7 @@
     {
       "name": "usage-bars",
       "source": "./mods/usage-bars",
-      "description": "Plan usage bars above the prompt: 5-hour session, weekly, per-model weekly, reset countdowns and extra usage",
+      "description": "Plan usage bars above the prompt: 5-hour session, weekly, per-model weekly (Fable), reset countdowns and extra usage",
       "version": "0.1.0"
     }
   ]

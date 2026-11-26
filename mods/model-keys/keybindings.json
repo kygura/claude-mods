@@ -3,10 +3,10 @@
     {
       "context": "Global",
       "bindings": {
-        "ctrl+alt+up": "app:diffFileListUp",
-        "ctrl+alt+down": "app:diffFileListDown",
-        "ctrl+alt+left": "app:toggleDiffNoiseFilter",
-        "ctrl+alt+right": "app:toggleDiffPreSession"
+        "ctrl+alt+up": "diff:nextFile",
+        "ctrl+alt+down": "diff:previousFile",
+        "ctrl+alt+left": "diff:previousSource",
+        "ctrl+alt+right": "diff:nextSource"
       }
     }
   ]

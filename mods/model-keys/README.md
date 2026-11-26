@@ -11,7 +11,7 @@ The choice applies to every main-loop request (subagents keep theirs); `/model` 
 
 ## Setup
 
-The keys need the bindings in [`keybindings.json`](keybindings.json) merged into `~/.claude/keybindings.json`. The repository's `install.sh` does this. They borrow diff-panel actions, so they do nothing while the diff panel is open.
+The keys need the bindings in [`keybindings.json`](keybindings.json) merged into `~/.claude/keybindings.json`. The repository's `install.sh` does this. They borrow the `/diff` dialog's actions, so they do nothing while that dialog is open. Earlier versions bound `app:diff*` actions, which stopped working in any repo with uncommitted changes; rerun `install.sh` or replace those four bindings.
 
 ## Cloud sessions
 

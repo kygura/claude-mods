@@ -34,14 +34,15 @@ const resolved = new Map<string, string>()
 const MODELS: (string | null)[] = [null, 'haiku', 'sonnet', 'opus', 'fable']
 const EFFORTS: Effort[] = ['low', 'medium', 'high', 'xhigh', 'max']
 
-// ctrl+alt+arrows are mapped to these idle diff-panel actions in
-// ~/.claude/keybindings.json. Buttons naming them fire from the prompt while
-// the diff panel (their engine handler) is closed.
+// ctrl+alt+arrows are mapped to the /diff dialog's actions in
+// ~/.claude/keybindings.json. A Button naming an action fires from the prompt
+// only while no engine handler of it is mounted; these are handled only while
+// /diff is open (the app:diff* actions are live whenever the repo has changes).
 const KEYS = {
-  modelUp: 'app:diffFileListUp',
-  modelDown: 'app:diffFileListDown',
-  effortDown: 'app:toggleDiffNoiseFilter',
-  effortUp: 'app:toggleDiffPreSession',
+  modelUp: 'diff:nextFile',
+  modelDown: 'diff:previousFile',
+  effortDown: 'diff:previousSource',
+  effortUp: 'diff:nextSource',
 }
 
 const MODEL_COLOR: Record<string, string> = {
