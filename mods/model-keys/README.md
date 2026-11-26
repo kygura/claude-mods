@@ -2,7 +2,7 @@
 
 A band above the Claude Code prompt for switching the model and the effort level of the main conversation, without typing `/model` or `/effort`.
 
-- **Click** any model (`default`, `haiku`, `sonnet`, `opus`, `fable`) or effort level (`low` to `max`). The current pick is a filled chip.
+- **Model** and **effort** are each one bar with the pick's name beside it: models `haiku` → `sonnet` → `opus` → `fable` in each model's color, effort `low` → `max` filled cool to hot. An empty bar is `default`. On the terminal, click a cell to pick it; on desktop, use ▲▼ and ◀▶.
 - **`ctrl+alt+↑/↓`** steps through models, **`ctrl+alt+←/→`** steps the effort level. `reset` returns to the session defaults.
 - Each reply starts with the model it was sent to, as `[claude-sonnet-5-5]`, written by the mod into the message (not claimed by the model). Shown once per turn, again if the model changes mid-turn.
 - **Context pane**: opens at session start (or run `/context-panel`) with the context fill (pastel sage → butter at 60% → rose at 85%), the turn count, a bar and legend broken down by category (system prompt, tools, MCP, memory, skills, messages, free space, autocompact buffer), and `c` / `x` buttons that run `/compact` and `/clear`. The headline figure is the status line's (the last response's input tokens against the model's window); the categories are a local estimate (no API calls).

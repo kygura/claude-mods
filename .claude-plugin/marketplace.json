@@ -14,7 +14,7 @@
       "name": "model-keys",
       "source": "./mods/model-keys",
       "description": "Pick model and effort with ctrl+alt+arrows or a click, plus a context breakdown pane with compact and clear buttons",
-      "version": "0.4.1"
+      "version": "0.5.0"
     },
     {
       "name": "no-self-clone",
