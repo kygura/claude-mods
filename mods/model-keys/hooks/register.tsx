@@ -228,20 +228,35 @@ export const register: Register = on => {
       set(m, EFFORTS[clamp(EFFORTS.indexOf(ef ?? 'medium') + d, EFFORTS.length)] ?? 'medium')
 
     const isTerminal = e.surface === 'terminal'
-    // Terminal: selected option is an inverted, bold chip; the rest tinted text.
-    // Desktop draws a native button that drops Text color/inverse, so the color
-    // goes on a dot beside it (filled = selected) and the rest are dimmed.
-    const chip = (key: string, label: string, color: string, isOn: boolean, onPress: () => unknown) =>
-      isTerminal ? (
-        <Button key={key} plain onPress={onPress}>
-          <Text color={color} bold={isOn} inverse={isOn}>{` ${label} `}</Text>
-        </Button>
-      ) : (
-        <Box key={key} alignItems="center" flexShrink={0}>
-          <Text color={color} bold>{isOn ? '●' : '○'}</Text>
-          <Button key={key} plain dimColor={!isOn} onPress={onPress}>{label}</Button>
+    // Model and effort are each one bar: cells up to the pick filled in its
+    // color, the rest dim, its name beside it; unset (default) is an empty bar.
+    // Terminal cells are buttons (click a cell to pick it); desktop buttons drop
+    // Text color, so there the bar is plain text and the arrows step it.
+    const bar = <T extends string>(prefix: string, steps: readonly T[], pick: T | null, color: string, onPick: (v: T) => unknown) => {
+      const at = pick ? steps.indexOf(pick) : -1
+      const fill = pick ? color : '#9ca3af'
+      return (
+        <Box flexShrink={0} columnGap={1} alignItems="center">
+          {isTerminal ? (
+            <Box flexShrink={0}>
+              {steps.map((name, i) => (
+                <Button key={`${prefix}-${name}`} plain onPress={() => onPick(name)}>
+                  <Text color={i <= at ? fill : '#4b5563'}>{i <= at ? '▰' : '▱'}</Text>
+                </Button>
+              ))}
+            </Box>
+          ) : (
+            <Box flexShrink={0}>
+              <Text color={fill}>{'▰'.repeat(at + 1)}</Text>
+              <Text color="#4b5563">{'▱'.repeat(steps.length - at - 1)}</Text>
+            </Box>
+          )}
+          <Text color={fill} bold={!!pick} dimColor={!pick}>{pick ?? 'default'}</Text>
         </Box>
       )
+    }
+    const named = MODELS.filter((x): x is string => x !== null)
+    const mPick = m && named.includes(m) ? m : null
     const arrow = (key: string, action: string, glyph: string, onPress: () => unknown) => (
       <Button key={key} plain dimColor action={action} onPress={onPress}>{glyph}</Button>
     )
@@ -250,10 +265,7 @@ export const register: Register = on => {
       <Box flexDirection="column" borderStyle="round" borderColor="#4b5563" paddingX={1} rowGap={1}>
         <Box columnGap={1} flexWrap="wrap" alignItems="center">
           <Box width={7} flexShrink={0}><Text dimColor>model</Text></Box>
-          {MODELS.map(alias => {
-            const name = alias ?? 'default'
-            return chip(name, name, MODEL_COLOR[name] ?? '#9ca3af', m === alias, () => set(alias, ef))
-          })}
+          {bar('m', named, mPick, MODEL_COLOR[mPick ?? 'default'] ?? '#9ca3af', v => set(v, ef))}
           <Box marginLeft={1} columnGap={1}>
             {arrow('mu', KEYS.modelUp, '▲', () => stepModel(1))}
             {arrow('md', KEYS.modelDown, '▼', () => stepModel(-1))}
@@ -261,7 +273,7 @@ export const register: Register = on => {
         </Box>
         <Box columnGap={1} flexWrap="wrap" alignItems="center">
           <Box width={7} flexShrink={0}><Text dimColor>effort</Text></Box>
-          {EFFORTS.map(level => chip(level, level, EFFORT_COLOR[level], ef === level, () => set(m, level)))}
+          {bar('e', EFFORTS, ef, ef ? EFFORT_COLOR[ef] : '#9ca3af', v => set(m, v))}
           <Box marginLeft={1} columnGap={1}>
             {arrow('ed', KEYS.effortDown, '◀', () => stepEffort(-1))}
             {arrow('eu', KEYS.effortUp, '▶', () => stepEffort(1))}
